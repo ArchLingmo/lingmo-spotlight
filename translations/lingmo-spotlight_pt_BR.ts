@@ -61,6 +61,14 @@
         <source>Spotlight Search</source>
         <translation>Buscar no Spotlight</translation>
     </message>
+    <message>
+        <source>Ask the AI…</source>
+        <translation>Pergunte à IA…</translation>
+    </message>
+    <message>
+        <source>AI</source>
+        <translation>IA</translation>
+    </message>
 </context>
 <context>
     <name>SearchEngine</name>
@@ -139,6 +147,14 @@
         <location line="+2"/>
         <source>Settings</source>
         <translation>Configurações</translation>
+    </message>
+    <message>
+        <source>Ask the AI</source>
+        <translation>Perguntar à IA</translation>
+    </message>
+    <message>
+        <source>Artificial Intelligence</source>
+        <translation>Inteligência Artificial</translation>
     </message>
 </context>
 <context>
@@ -240,8 +256,199 @@
     </message>
     <message>
         <location line="+1"/>
+        <source>Artificial Intelligence</source>
+        <translation>Inteligência Artificial</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>About</source>
         <translation>Sobre</translation>
+    </message>
+</context>
+<context>
+    <name>AiChat</name>
+    <message>
+        <source>Spotlight talks to Ollama models. Choose Ollama in Settings › AI.</source>
+        <translation>O Spotlight conversa com modelos do Ollama. Escolha o Ollama em Configurações › IA.</translation>
+    </message>
+    <message>
+        <source>No AI model chosen. Choose one in Settings › AI.</source>
+        <translation>Nenhum modelo de IA escolhido. Escolha um em Configurações › IA.</translation>
+    </message>
+    <message>
+        <source>Invalid response from the AI server.</source>
+        <translation>Resposta inválida do servidor de IA.</translation>
+    </message>
+    <message>
+        <source>The model %1 isn&apos;t installed. Install it in Settings › AI.</source>
+        <translation>O modelo %1 não está instalado. Instale-o em Configurações › IA.</translation>
+    </message>
+    <message>
+        <source>The AI server refused the request.</source>
+        <translation>O servidor de IA recusou o pedido.</translation>
+    </message>
+    <message>
+        <source>Ollama isn&apos;t running. Start it with “systemctl start ollama” or from Settings › AI.</source>
+        <translation>O Ollama não está rodando. Inicie-o com “systemctl start ollama” ou pelo Configurações › IA.</translation>
+    </message>
+    <message>
+        <source>The AI took too long to answer. Try a smaller model.</source>
+        <translation>A IA demorou demais para responder. Tente um modelo menor.</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t reach the AI.</source>
+        <translation>Não foi possível falar com a IA.</translation>
+    </message>
+    <message>
+        <source>Answered in %1 s · %2 tokens/s</source>
+        <translation>Respondeu em %1 s · %2 tokens/s</translation>
+    </message>
+    <message>
+        <source>Answered in %1 s</source>
+        <translation>Respondeu em %1 s</translation>
+    </message>
+    <message>
+        <source>The assistant engine stopped unexpectedly.</source>
+        <translation>O motor do assistente parou inesperadamente.</translation>
+    </message>
+    <message>
+        <source>Running %1…</source>
+        <translation>Executando %1…</translation>
+    </message>
+    <message>
+        <source>Ran: %1</source>
+        <translation>Executou: %1</translation>
+    </message>
+    <message>
+        <source>Reading system information…</source>
+        <translation>Lendo informações do sistema…</translation>
+    </message>
+    <message>
+        <source>Read system information</source>
+        <translation>Leu informações do sistema</translation>
+    </message>
+    <message>
+        <source>Reading %1…</source>
+        <translation>Lendo %1…</translation>
+    </message>
+    <message>
+        <source>Read %1</source>
+        <translation>Leu %1</translation>
+    </message>
+    <message>
+        <source>Summarizing %1…</source>
+        <translation>Resumindo %1…</translation>
+    </message>
+    <message>
+        <source>Summarized %1</source>
+        <translation>Resumiu %1</translation>
+    </message>
+    <message>
+        <source>Listing files…</source>
+        <translation>Listando arquivos…</translation>
+    </message>
+    <message>
+        <source>Listed files</source>
+        <translation>Listou arquivos</translation>
+    </message>
+    <message>
+        <source>Searching files for “%1”…</source>
+        <translation>Procurando “%1” nos arquivos…</translation>
+    </message>
+    <message>
+        <source>Searched files for “%1”</source>
+        <translation>Procurou “%1” nos arquivos</translation>
+    </message>
+    <message>
+        <source>Reading your notes…</source>
+        <translation>Lendo suas notas…</translation>
+    </message>
+    <message>
+        <source>Read your notes</source>
+        <translation>Leu suas notas</translation>
+    </message>
+    <message>
+        <source>Looking at the calendar…</source>
+        <translation>Olhando a agenda…</translation>
+    </message>
+    <message>
+        <source>Looked at the calendar</source>
+        <translation>Olhou a agenda</translation>
+    </message>
+    <message>
+        <source>Searching the web for “%1”…</source>
+        <translation>Buscando “%1” na web…</translation>
+    </message>
+    <message>
+        <source>Searched the web for “%1”</source>
+        <translation>Buscou “%1” na web</translation>
+    </message>
+    <message>
+        <source>Saving “%1”…</source>
+        <translation>Salvando “%1”…</translation>
+    </message>
+    <message>
+        <source>Saved “%1”</source>
+        <translation>Salvou “%1”</translation>
+    </message>
+</context>
+<context>
+    <name>ChatView</name>
+    <message>
+        <source>Copied</source>
+        <translation>Copiado</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Copiar</translation>
+    </message>
+    <message>
+        <source>Ask the AI anything. </source>
+        <translation>Pergunte qualquer coisa à IA. </translation>
+    </message>
+    <message>
+        <source>Esc stops the answer</source>
+        <translation>Esc para a resposta</translation>
+    </message>
+    <message>
+        <source>Enter sends · Esc leaves the chat · Ctrl+L new conversation</source>
+        <translation>Enter envia · Esc sai do chat · Ctrl+L nova conversa</translation>
+    </message>
+    <message>
+        <source>Reasoning… %1 s</source>
+        <translation>Raciocinando… %1 s</translation>
+    </message>
+    <message>
+        <source>Thinking… %1 s</source>
+        <translation>Pensando… %1 s</translation>
+    </message>
+    <message>
+        <source>Open in Assistant</source>
+        <translation>Abrir no Assistente</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>Permitido</translation>
+    </message>
+    <message>
+        <source>Continued in the Assistant</source>
+        <translation>Continuado no Assistente</translation>
+    </message>
+    <message>
+        <source>Declined: nothing was changed</source>
+        <translation>Recusado: nada foi alterado</translation>
+    </message>
+    <message>
+        <source>Decline</source>
+        <translation>Recusar</translation>
+    </message>
+    <message>
+        <source>Allow</source>
+        <translation>Permitir</translation>
+    </message>
+    <message>
+        <source>Ctrl+O opens in the Assistant</source>
+        <translation>Ctrl+O abre no Assistente</translation>
     </message>
 </context>
 </TS>

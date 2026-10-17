@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>qml/Main.qml</file>
         <file>qml/ResultDelegate.qml</file>
+        <file>qml/ChatView.qml</file>
     </qresource>
 </RCC>

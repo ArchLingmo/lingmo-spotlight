@@ -25,6 +25,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QJSEngine>
 #include <QMimeDatabase>
 #include <QProcess>
@@ -73,6 +74,7 @@ const SettingsPage kSettingsPages[] = {
     {"language", QT_TRANSLATE_NOOP("SettingsPage", "Language"), "preferences-desktop-locale", "language idioma lingua língua teclado keyboard"},
     {"battery", QT_TRANSLATE_NOOP("SettingsPage", "Battery"), "battery", "battery bateria energia"},
     {"power", QT_TRANSLATE_NOOP("SettingsPage", "Power"), "preferences-system-power", "power energia suspender desligar sleep"},
+    {"ai", QT_TRANSLATE_NOOP("SettingsPage", "Artificial Intelligence"), "applications-science", "ia ai inteligencia inteligência artificial ollama modelo model llm chat"},
     {"about", QT_TRANSLATE_NOOP("SettingsPage", "About"), "help-about", "about sobre sistema system versao versão"},
 };
 
@@ -249,7 +251,7 @@ QList<SearchResult> SearchEngine::instantResults(const QString &text)
     const QString q = fold(text);
     if (q.isEmpty())
         return {};
-    return calculator(text) + conversions(text) + apps(q) + settings(q);
+    return aiAssistant(text) + calculator(text) + conversions(text) + apps(q) + settings(q);
 }
 
 void SearchEngine::rebuild()
@@ -422,6 +424,11 @@ bool SearchEngine::activate(int row)
         QGuiApplication::clipboard()->setText(r->payload);
         break;
     case SearchResult::Info:
+        // "Ask the AI": the popup stays open and switches to chat mode
+        if (r->payload.startsWith(QLatin1String("ai:"))) {
+            Q_EMIT chatRequested(r->payload.mid(3));
+            return false;
+        }
         return false;
     case SearchResult::Content:
         if (!QProcess::startDetached(QStringLiteral("xdg-open"), {r->payload}))
@@ -443,4 +450,32 @@ bool SearchEngine::activate(int row)
     }
     }
     return true;
+}
+
+bool SearchEngine::isQuestion(const QString &text)
+{
+    const QString t = text.trimmed();
+    // "?como faço…" or "o que é lingmo?": a question for the AI, not an app name
+    if (t.startsWith(QLatin1Char('?')))
+        return t.size() > 1;
+    return t.endsWith(QLatin1Char('?')) && t.size() >= 6 && t.contains(QLatin1Char(' '));
+}
+
+QList<SearchResult> SearchEngine::aiAssistant(const QString &q) const
+{
+    if (!isQuestion(q))
+        return {};
+    QString prompt = q.trimmed();
+    if (prompt.startsWith(QLatin1Char('?')))
+        prompt = prompt.mid(1).trimmed();
+
+    SearchResult r;
+    r.kind = SearchResult::Info;
+    r.title = tr("Ask the AI");
+    r.subtitle = prompt;
+    r.icon = QIcon::hasThemeIcon(QStringLiteral("ollama")) ? QStringLiteral("ollama") : QStringLiteral("internet-chat");
+    r.category = tr("Artificial Intelligence");
+    r.payload = QStringLiteral("ai:") + prompt;
+    r.score = 1500;
+    return {r};
 }

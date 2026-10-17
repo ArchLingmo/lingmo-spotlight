@@ -8,15 +8,16 @@ Item {
 
     property bool selected: false
     signal clicked()
-    signal hovered()
+    // Global pointer position, so the list can tell a real move from a synthetic one
+    signal hovered(point globalPos)
 
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: control.clicked()
-        // Only follow the mouse when it actually moves, so a resting pointer
-        // doesn't steal the selection from the keyboard
-        onPositionChanged: control.hovered()
+        // Only follow the mouse when it actually moves: Qt also sends a move when
+        // the list grows under a resting pointer, which mustn't steal the selection
+        onPositionChanged: (mouse) => control.hovered(mapToGlobal(mouse.x, mouse.y))
     }
 
     RowLayout {
@@ -39,7 +40,7 @@ Item {
                 Layout.fillWidth: true
                 text: title
                 elide: Text.ElideRight
-                font.pixelSize: 15
+                font.pointSize: LingmoUI.Units.fontSubheading
                 color: control.selected ? LingmoUI.Theme.highlightedTextColor : LingmoUI.Theme.textColor
             }
 
@@ -48,8 +49,8 @@ Item {
                 text: subtitle
                 visible: text !== ""
                 elide: Text.ElideMiddle
-                font.pixelSize: 12
-                color: control.selected ? LingmoUI.Theme.highlightedTextColor : LingmoUI.Theme.disabledTextColor
+                font.pointSize: LingmoUI.Units.fontCaption
+                color: control.selected ? LingmoUI.Theme.highlightedTextColor : LingmoUI.Theme.secondaryTextColor
                 opacity: control.selected ? 0.85 : 1.0
             }
         }
@@ -57,7 +58,7 @@ Item {
         Label {
             text: "↵"
             visible: control.selected
-            font.pixelSize: 15
+            font.pointSize: LingmoUI.Units.fontSubheading
             color: LingmoUI.Theme.highlightedTextColor
         }
     }

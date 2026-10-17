@@ -46,8 +46,13 @@ public:
     // Runs the result's action; returns true when the popup should close
     Q_INVOKABLE bool activate(int row);
 
+    // A question ("…?") goes to the AI chat instead of the web
+    Q_INVOKABLE static bool isQuestion(const QString &text);
+
 Q_SIGNALS:
     void queryChanged();
+    // The user picked "Ask the AI": open the chat with this question
+    void chatRequested(const QString &question);
 
 private:
     void reloadApps();
@@ -57,6 +62,7 @@ private:
     void startFileSearch(const QString &query, quint64 generation);
 
     QList<SearchResult> calculator(const QString &q) const;
+    QList<SearchResult> aiAssistant(const QString &q) const;
     QList<SearchResult> conversions(const QString &q);
     QList<SearchResult> apps(const QString &q) const;
     QList<SearchResult> settings(const QString &q) const;

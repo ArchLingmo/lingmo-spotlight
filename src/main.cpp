@@ -30,6 +30,7 @@
 #include <QQmlContext>
 #include <QQuickWindow>
 
+#include "aichat.h"
 #include "searchengine.h"
 #include "spotlight.h"
 
@@ -90,12 +91,14 @@ int main(int argc, char *argv[])
     }
 
     SearchEngine engine;
+    AiChat aiChat;
     Spotlight spotlight;
     bus.registerObject(DBusPath, &spotlight, QDBusConnection::ExportAllSlots);
 
     QQmlApplicationEngine qml;
     qml.rootContext()->setContextProperty(QStringLiteral("searchEngine"), &engine);
     qml.rootContext()->setContextProperty(QStringLiteral("spotlight"), &spotlight);
+    qml.rootContext()->setContextProperty(QStringLiteral("aiChat"), &aiChat);
     qml.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
     if (qml.rootObjects().isEmpty())
         return 1;

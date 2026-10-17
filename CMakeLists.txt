@@ -23,6 +23,8 @@ add_executable(lingmo-spotlight
     src/converter.cpp
     src/currencyrates.cpp
     src/contentsearch.cpp
+    src/aichat.cpp
+    src/assistantengine.cpp
     qml.qrc
 )
 
