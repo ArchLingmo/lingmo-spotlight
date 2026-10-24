@@ -11,7 +11,9 @@ Window {
     readonly property int sectionHeight: 28
     readonly property int searchHeight: 64
     readonly property int maxListHeight: 440
-    readonly property bool hasResults: resultsView.count > 0 && !chatMode
+    // An app action (Lingmo Intents) picked from the results, waiting for Run
+    readonly property bool intentMode: intents !== null && intents.active || intentCard.doneText !== ""
+    readonly property bool hasResults: resultsView.count > 0 && !chatMode && !intentMode
     // "ai: …" / "ia: …" or a picked "Ask the AI" result: talk to the AI in place of searching
     property bool chatMode: false
     // Arrow keys or the mouse picked a row since the last keystroke: keep it
@@ -20,6 +22,7 @@ Window {
 
     width: 700
     height: searchHeight + (chatMode ? chatView.wantedHeight + 1
+                                     : intentMode ? intentCard.implicitHeight + 1
                                      : hasResults ? Math.min(resultsView.contentHeight + 12, maxListHeight) + 1 : 0)
     visible: false
     color: "transparent"
@@ -33,6 +36,9 @@ Window {
     function reset() {
         // A confirmation still waiting: reopen on it
         chatMode = aiChat.pendingConfirmation
+        if (intents !== null)
+            intents.cancel()
+        intentCard.doneText = ""
         lastPointer = undefined
         searchField.text = ""
         resultsView.currentIndex = 0
@@ -54,6 +60,11 @@ Window {
     }
 
     function submit() {
+        if (intentMode) {
+            if (intentCard.canRun)
+                intents.run()
+            return
+        }
         if (!chatMode) {
             activateCurrent()
             return
@@ -67,6 +78,27 @@ Window {
     Connections {
         target: searchEngine
         function onChatRequested(question) { root.enterChat(question) }
+    }
+
+    Connections {
+        target: intents
+        enabled: intents !== null
+        function onFinished(ok, message) {
+            if (!ok)
+                return
+            // Show it ran, then get out of the way
+            intentCard.doneText = message
+            doneTimer.restart()
+        }
+    }
+
+    Timer {
+        id: doneTimer
+        interval: 900
+        onTriggered: {
+            spotlight.hide()
+            intentCard.doneText = ""
+        }
     }
 
     // Results arrive in steps (files and contents later): the best one stays selected
@@ -85,7 +117,7 @@ Window {
 
     // Clicking anywhere else closes it, like macOS; not while the assistant
     // waits for Allow/Decline, so the question isn't lost
-    onActiveChanged: if (!active && visible && !aiChat.pendingConfirmation) spotlight.hide()
+    onActiveChanged: if (!active && visible && !aiChat.pendingConfirmation && !(intents !== null && intents.active)) spotlight.hide()
 
     LingmoUI.WindowHelper { id: windowHelper }
 
@@ -165,6 +197,8 @@ Window {
                         return
                     }
                     root.userNavigated = false
+                    if (intents !== null && intents.active)
+                        intents.cancel()     // typing again: back to the results
                     searchEngine.query = text
                     resultsView.currentIndex = 0
                 }
@@ -174,7 +208,9 @@ Window {
                 Keys.onReturnPressed: root.submit()
                 Keys.onEnterPressed: root.submit()
                 Keys.onEscapePressed: {
-                    if (root.chatMode && aiChat.busy)
+                    if (root.intentMode && intentCard.doneText === "")
+                        intents.cancel()
+                    else if (root.chatMode && aiChat.busy)
                         aiChat.stop()
                     else if (root.chatMode)
                         root.leaveChat()
@@ -203,8 +239,18 @@ Window {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            visible: root.hasResults || root.chatMode
+            visible: root.hasResults || root.chatMode || root.intentMode
             color: LingmoUI.Theme.dividerColor
+        }
+
+        IntentCard {
+            id: intentCard
+            Layout.fillWidth: true
+            Layout.preferredHeight: implicitHeight
+            visible: root.intentMode && !root.chatMode
+            info: intents !== null && intents.active ? intents.pending : ({})
+            onRunRequested: intents.run()
+            onCancelRequested: intents.cancel()
         }
 
         ListView {

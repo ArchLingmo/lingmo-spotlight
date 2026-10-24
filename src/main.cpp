@@ -32,6 +32,9 @@
 
 #include "aichat.h"
 #include "searchengine.h"
+#ifdef HAVE_LINGMO_INTENTS
+#include "intentprovider.h"
+#endif
 #include "spotlight.h"
 
 static const QString DBusService = QStringLiteral("com.lingmo.Spotlight");
@@ -78,8 +81,10 @@ int main(int argc, char *argv[])
     applyIconTheme();
 
     QTranslator translator;
+    // LINGMO_SPOTLIGHT_TRANSLATIONS: another folder (development builds)
     if (translator.load(QLocale(), QStringLiteral("lingmo-spotlight"), QStringLiteral("_"),
-                        QStringLiteral(TRANSLATIONS_DIR)))
+                        qEnvironmentVariableIsSet("LINGMO_SPOTLIGHT_TRANSLATIONS")
+                            ? qEnvironmentVariable("LINGMO_SPOTLIGHT_TRANSLATIONS") : QStringLiteral(TRANSLATIONS_DIR)))
         app.installTranslator(&translator);
 
     // One resident instance: a second launch just toggles the popup (Meta+Space)
@@ -92,6 +97,14 @@ int main(int argc, char *argv[])
     }
 
     SearchEngine engine;
+#ifdef HAVE_LINGMO_INTENTS
+    // App actions (Lingmo Intents): "criar alarme 7h" -> Relógio › Criar alarme às 07:00
+    IntentProvider intentProvider;
+    engine.setIntentProvider(&intentProvider);
+    QObject *intentsObject = &intentProvider;
+#else
+    QObject *intentsObject = nullptr;
+#endif
     AiChat aiChat;
     Spotlight spotlight;
     bus.registerObject(DBusPath, &spotlight, QDBusConnection::ExportAllSlots);
@@ -100,6 +113,7 @@ int main(int argc, char *argv[])
     qml.rootContext()->setContextProperty(QStringLiteral("searchEngine"), &engine);
     qml.rootContext()->setContextProperty(QStringLiteral("spotlight"), &spotlight);
     qml.rootContext()->setContextProperty(QStringLiteral("aiChat"), &aiChat);
+    qml.rootContext()->setContextProperty(QStringLiteral("intents"), intentsObject);
     qml.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
     if (qml.rootObjects().isEmpty())
         return 1;

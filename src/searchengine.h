@@ -30,6 +30,8 @@
 #include "currencyrates.h"
 #include "resultsmodel.h"
 
+class IntentProvider;
+
 class SearchEngine : public QObject
 {
     Q_OBJECT
@@ -45,6 +47,8 @@ public:
 
     // Runs the result's action; returns true when the popup should close
     Q_INVOKABLE bool activate(int row);
+    // App actions (Lingmo Intents); null when built without liblingmo-intents
+    void setIntentProvider(IntentProvider *provider) { m_intents = provider; }
 
     // A question ("…?") goes to the AI chat instead of the web
     Q_INVOKABLE static bool isQuestion(const QString &text);
@@ -68,6 +72,7 @@ private:
     QList<SearchResult> settings(const QString &q) const;
     // Lingmo Assistant workflows with a manual trigger shown in Spotlight
     QList<SearchResult> workflows(const QString &q) const;
+    QList<SearchResult> intents(const QString &text) const;
 
     QString m_query;
     ResultsModel m_model;
@@ -86,4 +91,5 @@ private:
     quint64 m_generation = 0;
     QFutureWatcher<QList<SearchResult>> m_fileWatcher;
     QTimer m_fileDebounce;
+    IntentProvider *m_intents = nullptr;
 };

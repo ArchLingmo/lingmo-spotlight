@@ -18,6 +18,9 @@
  */
 
 #include "searchengine.h"
+#ifdef HAVE_LINGMO_INTENTS
+#include "intentprovider.h"
+#endif
 
 #include <QClipboard>
 #include <QCoreApplication>
@@ -255,7 +258,18 @@ QList<SearchResult> SearchEngine::instantResults(const QString &text)
     const QString q = fold(text);
     if (q.isEmpty())
         return {};
-    return aiAssistant(text) + calculator(text) + conversions(text) + apps(q) + settings(q) + workflows(q);
+    return aiAssistant(text) + calculator(text) + conversions(text) + intents(text) + apps(q) + settings(q) + workflows(q);
+}
+
+QList<SearchResult> SearchEngine::intents(const QString &text) const
+{
+#ifdef HAVE_LINGMO_INTENTS
+    if (m_intents && !isQuestion(text))
+        return m_intents->search(text);
+#else
+    Q_UNUSED(text)
+#endif
+    return {};
 }
 
 QList<SearchResult> SearchEngine::workflows(const QString &q) const
@@ -480,6 +494,14 @@ bool SearchEngine::activate(int row)
             QProcess::startDetached(QStringLiteral("lingmo-assistant-flows"), {QStringLiteral("--run"), r->payload.mid(5)});
             break;
         }
+        return false;
+    case SearchResult::Intent:
+#ifdef HAVE_LINGMO_INTENTS
+        // The popup shows what will run; actions that don't send or change
+        // anything and need nothing else run at once
+        if (m_intents && m_intents->pick(r->payload))
+            m_intents->run();
+#endif
         return false;
     case SearchResult::Content:
         if (!QProcess::startDetached(QStringLiteral("xdg-open"), {r->payload}))

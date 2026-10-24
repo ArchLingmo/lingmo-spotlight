@@ -33,6 +33,16 @@ target_link_libraries(lingmo-spotlight PRIVATE
     KF6::Service KF6::KIOGui KF6::WindowSystem
 )
 
+# App actions (Lingmo Intents): matched from the typed text, run over D-Bus
+find_package(LingmoIntents 1.0 QUIET)
+if(LingmoIntents_FOUND)
+    target_sources(lingmo-spotlight PRIVATE src/intentprovider.cpp src/intentprovider.h)
+    target_compile_definitions(lingmo-spotlight PRIVATE HAVE_LINGMO_INTENTS)
+    target_link_libraries(lingmo-spotlight PRIVATE LingmoIntents::LingmoIntents)
+else()
+    message(WARNING "LingmoIntents not found: Spotlight is built without app actions")
+endif()
+
 # Conversion parser self-check: cmake -DBUILD_TESTING=ON, then ctest
 option(BUILD_TESTING "Build the self-check programs" OFF)
 if(BUILD_TESTING)

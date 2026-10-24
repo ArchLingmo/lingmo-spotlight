@@ -459,4 +459,69 @@
         <translation>Ctrl+O abre no Assistente</translation>
     </message>
 </context>
+<context>
+    <name>IntentCard</name>
+    <message>
+        <source>Done</source>
+        <translation>Feito</translation>
+    </message>
+    <message>
+        <source>Running…</source>
+        <translation>Executando…</translation>
+    </message>
+    <message>
+        <source>This sends something on your behalf. Check it before running.</source>
+        <translation>Isto envia algo em seu nome. Confira antes de executar.</translation>
+    </message>
+    <message>
+        <source>This changes something. Check it before running.</source>
+        <translation>Isto altera algo. Confira antes de executar.</translation>
+    </message>
+    <message>
+        <source>Missing: %1. Type it too, e.g. “criar alarme 7h”.</source>
+        <translation>Falta: %1. Digite também, ex.: «criar alarme 7h».</translation>
+    </message>
+    <message>
+        <source>Enter runs · Esc cancels</source>
+        <translation>Enter executa · Esc cancela</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>Send</source>
+        <translation>Enviar</translation>
+    </message>
+    <message>
+        <source>Run</source>
+        <translation>Executar</translation>
+    </message>
+</context>
+<context>
+    <name>IntentProvider</name>
+    <message>
+        <source>Missing: %1</source>
+        <translation>Falta: %1</translation>
+    </message>
+    <message>
+        <source>Asks before running</source>
+        <translation>Pergunta antes de executar</translation>
+    </message>
+    <message>
+        <source>Actions</source>
+        <translation>Ações</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <source>yes</source>
+        <translation>sim</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation>não</translation>
+    </message>
+</context>
 </TS>

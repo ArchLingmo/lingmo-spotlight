@@ -1,0 +1,28 @@
+{
+	"BUILD_DIR" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/build-agent-ask/lingmo-spotlight_autogen",
+	"CMAKE_BINARY_DIR" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/build-agent-ask",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/build-agent-ask",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight",
+	"CMAKE_SOURCE_DIR" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Ninja",
+	"INCLUDE_DIR" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/build-agent-ask/lingmo-spotlight_autogen/include",
+	"INPUTS" : 
+	[
+		"/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/qml/IntentCard.qml",
+		"/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/qml/Main.qml",
+		"/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/qml/ResultDelegate.qml",
+		"/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/qml/ChatView.qml"
+	],
+	"LOCK_FILE" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/build-agent-ask/CMakeFiles/lingmo-spotlight_autogen.dir/AutoRcc_qml_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "qml" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_qml.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt6/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/build-agent-ask/CMakeFiles/lingmo-spotlight_autogen.dir/AutoRcc_qml_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/home/devalexandre/projects/devalexandre/lingmo/lingmo-spotlight/qml.qrc",
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}
