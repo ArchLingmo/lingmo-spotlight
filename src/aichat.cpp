@@ -19,6 +19,8 @@
 
 #include "aichat.h"
 
+#include <QRegularExpression>
+
 #include <QClipboard>
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -313,6 +315,7 @@ void AiChat::clear()
     setError({});
     emit countChanged();
     m_conversationId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    m_agent.clear();
     setUsingEngine(false);
     if (m_lastPending) {
         m_lastPending = false;
@@ -432,9 +435,23 @@ void AiChat::askEngine(const QString &question)
     setUsingEngine(true);
     setEngineBusy(true);
     m_elapsed.start();
-    m_engine.send(QJsonObject{{QStringLiteral("type"), QStringLiteral("chat")},
-                              {QStringLiteral("conversation_id"), m_conversationId},
-                              {QStringLiteral("message"), question}});
+    // "@secretaria resuma meus e-mails": a custom agent of the Assistente; it stays
+    // the agent of this conversation for the next questions
+    QString message = question;
+    static const QRegularExpression agentPrefix(QStringLiteral("^@([\\w.-]{1,64})\\s+(.+)$"),
+                                                QRegularExpression::UseUnicodePropertiesOption
+                                                    | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpressionMatch match = agentPrefix.match(question.trimmed());
+    if (match.hasMatch()) {
+        m_agent = match.captured(1);
+        message = match.captured(2).trimmed();
+    }
+    QJsonObject request{{QStringLiteral("type"), QStringLiteral("chat")},
+                        {QStringLiteral("conversation_id"), m_conversationId},
+                        {QStringLiteral("message"), message}};
+    if (!m_agent.isEmpty())
+        request.insert(QStringLiteral("agent"), m_agent);
+    m_engine.send(request);
 }
 
 int AiChat::openAnswer()

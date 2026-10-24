@@ -25,7 +25,11 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QGuiApplication>
+#include <QFile>
 #include <QIcon>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QJSEngine>
 #include <QMimeDatabase>
 #include <QProcess>
@@ -251,7 +255,48 @@ QList<SearchResult> SearchEngine::instantResults(const QString &text)
     const QString q = fold(text);
     if (q.isEmpty())
         return {};
-    return aiAssistant(text) + calculator(text) + conversions(text) + apps(q) + settings(q);
+    return aiAssistant(text) + calculator(text) + conversions(text) + apps(q) + settings(q) + workflows(q);
+}
+
+QList<SearchResult> SearchEngine::workflows(const QString &q) const
+{
+    if (q.size() < 2)
+        return {};
+    // ~/.local/share/lingmo/assistant/workflows/*.json (docs/protocol.md of lingmo-assistant)
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                        + QStringLiteral("/lingmo/assistant/workflows");
+    QList<SearchResult> out;
+    QDirIterator it(dir, {QStringLiteral("*.json")}, QDir::Files);
+    while (it.hasNext() && out.size() < 5) {
+        QFile file(it.next());
+        if (file.size() > 1024 * 1024 || !file.open(QIODevice::ReadOnly))
+            continue;
+        const QJsonObject flow = QJsonDocument::fromJson(file.readAll()).object();
+        if (!flow.value(QLatin1String("enabled")).toBool(true))
+            continue;
+        bool shown = false;
+        for (const QJsonValue &node : flow.value(QLatin1String("nodes")).toArray()) {
+            const QJsonObject n = node.toObject();
+            if (n.value(QLatin1String("type")).toString() == QLatin1String("trigger.manual"))
+                shown = n.value(QLatin1String("params")).toObject().value(QLatin1String("spotlight")).toBool(true);
+        }
+        const QString name = flow.value(QLatin1String("name")).toString();
+        const QString id = flow.value(QLatin1String("id")).toString();
+        static const QRegularExpression validId(QStringLiteral("^[A-Za-z0-9_-]{1,64}$"));
+        if (!shown || !validId.match(id).hasMatch() || !fold(name).contains(q))
+            continue;
+        SearchResult r;
+        r.kind = SearchResult::Info;
+        r.title = tr("Run “%1”").arg(name);
+        r.subtitle = flow.value(QLatin1String("description")).toString();
+        r.icon = QIcon::hasThemeIcon(QStringLiteral("lingmo-assistant")) ? QStringLiteral("lingmo-assistant")
+                                                                          : QStringLiteral("media-playback-start");
+        r.category = tr("Assistant workflows");
+        r.payload = QStringLiteral("flow:") + id;
+        r.score = 900;
+        out << r;
+    }
+    return out;
 }
 
 void SearchEngine::rebuild()
@@ -429,6 +474,12 @@ bool SearchEngine::activate(int row)
             Q_EMIT chatRequested(r->payload.mid(3));
             return false;
         }
+        // An Assistant workflow: its background service runs it (approval and
+        // confirmations still apply there)
+        if (r->payload.startsWith(QLatin1String("flow:"))) {
+            QProcess::startDetached(QStringLiteral("lingmo-assistant-flows"), {QStringLiteral("--run"), r->payload.mid(5)});
+            break;
+        }
         return false;
     case SearchResult::Content:
         if (!QProcess::startDetached(QStringLiteral("xdg-open"), {r->payload}))
@@ -455,6 +506,9 @@ bool SearchEngine::activate(int row)
 bool SearchEngine::isQuestion(const QString &text)
 {
     const QString t = text.trimmed();
+    // "ai: pergunta" or "ai:@agente pergunta": always the AI (a custom agent with @name)
+    if (t.startsWith(QLatin1String("ai:"), Qt::CaseInsensitive))
+        return t.size() > 3;
     // "?como faço…" or "o que é lingmo?": a question for the AI, not an app name
     if (t.startsWith(QLatin1Char('?')))
         return t.size() > 1;
@@ -466,7 +520,9 @@ QList<SearchResult> SearchEngine::aiAssistant(const QString &q) const
     if (!isQuestion(q))
         return {};
     QString prompt = q.trimmed();
-    if (prompt.startsWith(QLatin1Char('?')))
+    if (prompt.startsWith(QLatin1String("ai:"), Qt::CaseInsensitive))
+        prompt = prompt.mid(3).trimmed();
+    else if (prompt.startsWith(QLatin1Char('?')))
         prompt = prompt.mid(1).trimmed();
 
     SearchResult r;

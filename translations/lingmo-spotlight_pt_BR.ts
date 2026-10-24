@@ -156,6 +156,14 @@
         <source>Artificial Intelligence</source>
         <translation>Inteligência Artificial</translation>
     </message>
+    <message>
+        <source>Run “%1”</source>
+        <translation>Executar “%1”</translation>
+    </message>
+    <message>
+        <source>Assistant workflows</source>
+        <translation>Fluxos do Assistente</translation>
+    </message>
 </context>
 <context>
     <name>SettingsPage</name>

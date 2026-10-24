@@ -66,6 +66,8 @@ private:
     QList<SearchResult> conversions(const QString &q);
     QList<SearchResult> apps(const QString &q) const;
     QList<SearchResult> settings(const QString &q) const;
+    // Lingmo Assistant workflows with a manual trigger shown in Spotlight
+    QList<SearchResult> workflows(const QString &q) const;
 
     QString m_query;
     ResultsModel m_model;

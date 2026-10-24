@@ -89,27 +89,18 @@ Window {
 
     LingmoUI.WindowHelper { id: windowHelper }
 
-    LingmoUI.WindowBlur {
-        view: root
-        geometry: Qt.rect(root.x, root.y, root.width, root.height)
-        windowRadius: background.radius
-        enabled: windowHelper.compositing
-    }
-
     LingmoUI.WindowShadow {
         view: root
         geometry: Qt.rect(root.x, root.y, root.width, root.height)
         radius: background.radius
     }
 
-    Rectangle {
+    // "Vidro Lingmo" (Settings > Appearance > Glass): fills the window and asks
+    // KWin for the blur; solid with Glass off or without a compositor
+    LingmoUI.GlassSurface {
         id: background
         anchors.fill: parent
         radius: 16
-        color: LingmoUI.Theme.darkMode ? "#2A2A2E" : "#F6F6F8"
-        opacity: windowHelper.compositing ? (LingmoUI.Theme.darkMode ? 0.78 : 0.82) : 1.0
-        border.width: 1
-        border.color: LingmoUI.Theme.darkMode ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(0, 0, 0, 0.12)
     }
 
     ColumnLayout {

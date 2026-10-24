@@ -120,6 +120,7 @@ private:
     void dispatch();
     void checkTools();
     void askEngine(const QString &question);
+    QString m_agent;   // custom agent (@name) of this conversation
     void onEngineEvent(const QVariantMap &event);
     void setEngineBusy(bool busy);
     void setUsingEngine(bool on);
