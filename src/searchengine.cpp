@@ -104,8 +104,15 @@ double matchScore(const QString &text, const QString &q)
     if (t.startsWith(q))
         return 100;
     const int pos = t.indexOf(q);
-    if (pos < 0)
-        return 0;
+    if (pos < 0) {
+        // without spaces and dashes: "fileactions" finds "File actions"
+        static const QRegularExpression gaps(QStringLiteral("[^\\p{L}\\p{N}]"));
+        const QString tc = QString(t).remove(gaps);
+        const QString qc = QString(q).remove(gaps);
+        if (qc.size() < 3 || !tc.contains(qc))
+            return 0;
+        return tc == qc ? 110 : tc.startsWith(qc) ? 90 : 50;
+    }
     // start of a word beats the middle of one
     return (pos > 0 && !t.at(pos - 1).isLetterOrNumber()) ? 80 : 55;
 }
@@ -409,6 +416,8 @@ QList<SearchResult> SearchEngine::apps(const QString &q) const
     QList<SearchResult> out;
     for (const KService::Ptr &s : m_apps) {
         double score = matchScore(s->name(), q);
+        // the English name too: "File actions" while the system is in Portuguese
+        score = std::max(score, matchScore(s->untranslatedName(), q) * 0.9);
         score = std::max(score, matchScore(s->genericName(), q) * 0.7);
         score = std::max(score, matchScore(s->untranslatedGenericName(), q) * 0.6);
         for (const QString &k : s->keywords())
