@@ -11,6 +11,7 @@ list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 include(GNUInstallDirs)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick DBus Concurrent Network LinguistTools)
+find_package(KF6CoreAddons REQUIRED)
 find_package(KF6Service REQUIRED)
 find_package(KF6KIO REQUIRED)
 find_package(KF6WindowSystem REQUIRED)
@@ -30,7 +31,7 @@ add_executable(lingmo-spotlight
 
 target_link_libraries(lingmo-spotlight PRIVATE
     Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::DBus Qt6::Concurrent Qt6::Network
-    KF6::Service KF6::KIOGui KF6::WindowSystem
+    KF6::Service KF6::CoreAddons KF6::KIOGui KF6::WindowSystem
 )
 
 # App actions (Lingmo Intents): matched from the typed text, run over D-Bus

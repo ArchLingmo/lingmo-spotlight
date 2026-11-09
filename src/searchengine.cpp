@@ -29,6 +29,7 @@
 #include <QDirIterator>
 #include <QGuiApplication>
 #include <QFile>
+#include <QFileInfo>
 #include <QIcon>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -45,6 +46,7 @@
 #include <KApplicationTrader>
 #include <KIO/ApplicationLauncherJob>
 #include <KSycoca>
+#include <KShell>
 
 #include "converter.h"
 
@@ -57,6 +59,29 @@ constexpr int MaxFiles = 8;
 constexpr int MaxFileDepth = 5;
 constexpr int MaxVisitedEntries = 40000;
 constexpr int MinContentQuery = 3;
+
+// A desktop entry left behind by an app that is gone (portable binary deleted,
+// wine prefix removed...) still sits in KSycoca: hide it when its program is missing.
+bool programExists(const QString &program)
+{
+    if (program.isEmpty())
+        return false;
+    if (QDir::isAbsolutePath(program))
+        return QFileInfo(program).isExecutable();
+    return !QStandardPaths::findExecutable(program).isEmpty();
+}
+
+bool isLaunchable(const KService::Ptr &s)
+{
+    QStringList args = KShell::splitArgs(s->exec());
+    // "env VAR=value ... program": the program is the first token after the assignments
+    if (!args.isEmpty() && args.first() == QLatin1String("env")) {
+        args.removeFirst();
+        while (!args.isEmpty() && (args.first().contains(QLatin1Char('=')) || args.first().startsWith(QLatin1Char('-'))))
+            args.removeFirst();
+    }
+    return !args.isEmpty() && programExists(args.first());
+}
 
 // Lingmo Settings pages: module id, title, icon, extra search words (en + pt)
 // Titles are translated at display time (context "SettingsPage")
@@ -213,7 +238,7 @@ SearchEngine::SearchEngine(QObject *parent)
 void SearchEngine::reloadApps()
 {
     m_apps = KApplicationTrader::query([](const KService::Ptr &s) {
-        return !s->noDisplay() && !s->exec().isEmpty();
+        return !s->noDisplay() && !s->exec().isEmpty() && isLaunchable(s);
     });
 }
 
